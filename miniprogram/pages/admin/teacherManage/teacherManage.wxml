@@ -1,0 +1,48 @@
+<view class="container">
+  <view class="title">教师管理</view>
+  <view class="teacher-form">
+    <view class="form-item">
+      <text>头像</text>
+      <image src="{{form.avatar || '/images/avatar-default.png'}}" class="avatar"/>
+      <button class="upload-btn" bindtap="onUploadAvatar">上传头像</button>
+    </view>
+    <view class="form-item">
+      <text>姓名</text>
+      <input value="{{form.name}}" bindinput="onNameInput" placeholder="请输入姓名"/>
+    </view>
+    <view class="form-item">
+      <text>简介</text>
+      <textarea value="{{form.intro}}" bindinput="onIntroInput" placeholder="请输入简介"/>
+    </view>
+    <view class="form-item">
+      <text>技能标签（逗号分隔）</text>
+      <input value="{{form.skillsStr}}" bindinput="onSkillsInput" placeholder="如：爵士,芭蕾"/>
+    </view>
+    <view class="form-item">
+      <text>舞蹈视频</text>
+      <block wx:if="{{form.video}}">
+        <video src="{{form.video}}" class="video-preview" controls></video>
+        <button class="upload-btn" bindtap="onDeleteVideo">删除视频</button>
+      </block>
+      <block wx:else>
+        <button class="upload-btn" bindtap="onUploadVideo">上传视频</button>
+      </block>
+    </view>
+    <button class="save-btn" bindtap="onSubmit">保存</button>
+  </view>
+  <view class="teacher-list-title">教师列表</view>
+  <view class="teacher-list">
+    <block wx:for="{{teacherList}}" wx:key="_id">
+      <view class="teacher-card">
+        <image src="{{item.avatar || '/images/avatar-default.png'}}" class="avatar-mini"/>
+        <view class="info">
+          <view class="name">{{item.name}}</view>
+          <view class="intro">{{item.intro}}</view>
+          <view class="skills">{{item.skills.join('、')}}</view>
+        </view>
+        <button size="mini" data-id="{{item._id}}" bindtap="onEditTeacher">编辑</button>
+        <button size="mini" data-id="{{item._id}}" bindtap="onDeleteTeacher">删除</button>
+      </view>
+    </block>
+  </view>
+</view>

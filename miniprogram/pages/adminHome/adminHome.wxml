@@ -1,0 +1,48 @@
+<!--pages/adminHome/adminHome.wxml-->
+<view class="admin-home-bg">
+  <view class="admin-title">管理后台</view>
+  <view class="card-list">
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goTobM">
+      <image src="/images/课程.png"></image>
+      <text>轮播图管理</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goToStu">
+      <image src="/images/课程.png"></image>
+      <text>学生界面</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goTotM">
+      <image src="/images/课程.png"></image>
+      <text>教师信息管理</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goTocM">
+      <image src="/images/课程.png"></image>
+      <text>课表管理</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goToSchedules">
+      <image src="/images/课程.png"></image>
+      <text>预约管理</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goTosM">
+      <image src="/images/课程.png"></image>
+      <text>人员管理</text>
+      </button>
+    </view>
+    <view class="action-item">
+      <button class="icon-btn" bindtap="goTotrail">
+      <image src="/images/课程.png"></image>
+      <text>体验课信息</text>
+      </button>
+    </view>
+  </view>
+</view>

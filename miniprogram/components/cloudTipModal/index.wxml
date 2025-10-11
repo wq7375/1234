@@ -1,0 +1,6 @@
+<view class="cloud-tip-modal">
+  <view class="modal-mask"></view>
+  <view class="modal-content">
+    <slot></slot>
+  </view>
+</view>

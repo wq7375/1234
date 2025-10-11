@@ -1,0 +1,58 @@
+<!--pages/my/my.wxml-->
+<view class="mine-container">
+  <!-- 个人信息区块 -->
+  <view class="profile-card">
+    <image class="avatar" src="{{avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+    <view class="profile-info">
+      <view class="user-row">
+        <view class="user-name">{{userName || '未设置昵称'}}</view>
+        <view class="user-phone">{{userPhone}}</view>
+      </view>
+      <button class="upload-btn" wx:if="{{showUploadAvatar}}" bindtap="uploadAvatar">上传头像</button>
+    </view>
+  </view>
+
+  <!-- 跳转管理员页面 -->
+  <view class="section-card" wx:if="{{role === 'admin'}}">
+    <text>您现在是管理员，您可以：</text>
+    <button bind:tap="goToAdminHome" style="background: #fff; border-radius: 18rpx; box-shadow: 10rpx 5rpx 5rpx rgba(0,0,0,0.08);">跳转至管理员页面</button>
+  </view>
+
+  <!-- 卡片区块 -->
+  <view class="section-card">
+    <view class="section-title">我的卡</view>
+    <block wx:if="{{cards.length > 0}}">
+      <block wx:for="{{cards}}" wx:key="label">
+        <view class="card-info">
+          <view>卡类型：{{item.label}}</view>
+          <view wx:if="{{item.expireDate}}">到期时间：{{item.expireDate}}</view>
+          <view wx:if="{{item.remainCount !== undefined}}">剩余次数：{{item.remainCount}}</view>
+          <view>类型：{{item.type}}</view>
+          <view>分类：{{item.category}}</view>
+        </view>
+      </block>
+    </block>
+    <view class="card-info" wx:else>暂无卡片信息</view>
+  </view>
+
+  <!-- 历史上课记录 -->
+  <view class="section-card">
+    <view class="section-title">预约记录</view> 
+    <view class="section">
+      <text>选择截止日期：</text>
+      <picker mode="date" bindchange="onDateChange">
+        <view class="date-picker">{{cutoffDate || '请选择日期'}}</view>
+      </picker>
+    </view>
+    <view class="section">
+      <button bindtap="loadHistory">查询预约记录</button>
+    </view>
+    <view class="section">
+      <block wx:for="{{historyList}}" wx:key="id">
+        <view class="history-item">
+          <text>{{item.date}} {{item.startTime}}-{{item.endTime}}: {{item.courseName}}({{item.teacher}})</text>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,73 @@
+Page({
+  data: {
+    name: '',
+    phone: ''
+  },
+  
+
+  onNameInput(e) {
+    this.setData({ name: e.detail.value })
+  },
+  onPhoneInput(e) {
+    this.setData({ phone: e.detail.value })
+  },
+  visitorLogin() {
+    wx.navigateTo({
+      url: '/pages/youke/youke'
+    });
+  },
+  onLoad() {
+    const name = '';
+    const phone = '';
+
+    // wx.redirectTo({ url: '/pages/adminHome/adminHome' }); return //本地测试，用于直接跳转admin页面
+    wx.showLoading({ title: '读取中...' });
+    wx.cloud.callFunction({
+      name: 'login',
+      data: { name, phone },
+      success: res => {
+        const role = res.result.role;
+        // console.log(res.result.LogInfo);//日志，可删
+        if (role === 'admin') {
+          wx.redirectTo({ url: '/pages/adminHome/adminHome' })
+        } else if (role === 'student') {
+          wx.switchTab({ url: '/pages/studentHome/studentHome' })
+        }
+        wx.hideLoading();
+      },
+      fail: () => {
+        wx.showToast({ title: '登录失败', icon: 'none' });
+      }
+    })
+  },
+
+  onLogin() {
+    const { name, phone } = this.data
+    // console.log('name: '+name);
+    // console.log('phone: '+phone);//以上两行是日志，可删
+    if (!name || !phone) {
+      wx.showToast({ title: '请填写姓名和手机号', icon: 'none' })
+      return
+    }
+
+    wx.showLoading({ title: '正在登录...' });
+    wx.cloud.callFunction({
+      name: 'login',
+      data: { name, phone },
+      success: res => {
+        const role = res.result.role;
+        // console.log(res.result.LogInfo);//日志，可删
+        if (role === 'admin') {
+          wx.redirectTo({ url: '/pages/adminHome/adminHome' })
+        } else if (role === 'student') {
+          wx.switchTab({ url: '/pages/studentHome/studentHome' })
+        } else {
+          wx.showToast({ title: '未找到信息，请联系管理员', icon: 'none' })
+        }
+      },
+      fail: () => {
+        wx.showToast({ title: '登录失败', icon: 'none' })
+      }
+    })
+  }
+})

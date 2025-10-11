@@ -1,0 +1,16 @@
+<view class="container">
+  <image src="{{teacher.avatar}}" class="avatar" mode="aspectFill" />
+
+  <view class="name">{{teacher.name}}</view>
+  <view class="skills">擅长：{{formattedSkills}}</view>
+
+  <view class="intro-section">
+    <view class="section-title">老师简介</view>
+    <view class="intro">{{teacher.intro || '暂无简介'}}</view>
+  </view>
+
+  <block wx:if="{{teacher.video}}">
+    <view class="section-title">舞蹈视频</view>
+    <video src="{{teacher.video}}" class="video-player" controls></video>
+  </block>
+</view>

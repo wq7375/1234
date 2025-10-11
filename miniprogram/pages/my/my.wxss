@@ -1,0 +1,123 @@
+.mine-container {
+  background: #f7f7fa;
+  min-height: 100vh;
+  padding: 32rpx 18rpx;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 18rpx;
+  box-shadow: 0 2rpx 8rpx #eee;
+  display: flex;
+  align-items: center;
+  padding: 24rpx 16rpx;
+  margin-bottom: 30rpx;
+}
+
+.avatar {
+  width: 110rpx;
+  height: 110rpx;
+  border-radius: 50%;
+  background: #eee;
+  margin-right: 28rpx;
+  border: 2rpx solid #f0f0f0;
+}
+
+.profile-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.user-name {
+  font-size: 35rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 18rpx;
+}
+
+.user-phone {
+  font-size: 28rpx;
+  color: #888;
+}
+
+.upload-btn {
+  background: #1aad19;
+  color: #fff;
+  border-radius: 10rpx;
+  font-size: 22rpx;
+  padding: 10rpx 30rpx;
+  margin-top: 6rpx;
+  border: none;
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx #eee;
+  margin-bottom: 28rpx;
+  padding: 20rpx 14rpx;
+}
+
+.section-title {
+  font-size: 35rpx;
+  font-weight: bold;
+  color: #7a3fc3;
+  margin-bottom: 16rpx;
+}
+
+.card-info {
+  color: #555;
+  font-size: 28rpx;
+  margin-bottom: 12rpx;
+  line-height: 1.8;
+}
+
+.record-list {
+  margin-top: 10rpx;
+}
+
+.record-item {
+  padding: 10rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+  font-size: 20rpx;
+  color: #333;
+}
+
+.record-date {
+  font-size: 18rpx;
+  color: #a78ee4;
+}
+
+.record-detail {
+  font-size: 19rpx;
+  color: #555;
+}
+
+.no-record {
+  text-align: center;
+  color: #bbb;
+  font-size: 18rpx;
+  margin-top: 24rpx;
+}
+.container {
+  padding: 20rpx;
+}
+.section {
+  margin-bottom: 25rpx;
+}
+.date-picker {
+  padding: 10rpx;
+  background-color: #f0f0f0;
+  border-radius: 8rpx;
+}
+.history-item {
+  padding: 10rpx;
+  border-bottom: 1px solid #ddd;
+}
