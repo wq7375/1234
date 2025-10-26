@@ -1,6 +1,7 @@
 {
   "cloud": true,
   "pages": [
+    "pages/youke/youke",
     "pages/login/login",
     "pages/index/index",
     "pages/studentHome/studentHome",
@@ -13,7 +14,6 @@
     "pages/admin/studentManage/studentManage",
     "pages/admin/schedules/schedules",
     "pages/teacherDetail/teacherDetail",
-    "pages/youke/youke",
     "pages/experience/experience",
     "pages/admin/trailManage/trailManage",
     "pages/youkekebiao/youkekebiao"
