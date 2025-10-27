@@ -8,9 +8,9 @@
 * 可能涉及的云函数和页面：
 
 | 类型 | 名称 |
----
-| 云函数 | `checkClassStatus`,`deletePeople`,`getBookingHistory`,`manageSchedule`,`updateSchedule` |
-| 页面 | `Schedules.js`,`youkekebiao.js`,`yueke.js` |
+|:---:|:---:|
+| 云函数 | `checkClassStatus`,<br>`deletePeople`,<br>`getBookingHistory`,<br>`manageSchedule`,<br>`updateSchedule` |
+| 页面 | `Schedules.js`,<br>`youkekebiao.js`,<br>`yueke.js`(已修改) |
 
 ## TODO
 
