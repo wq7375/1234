@@ -7,6 +7,29 @@ Page({
     teacherList: []
   },
   onLoad() {
+    const name = '';
+    const phone = '';
+
+    // wx.redirectTo({ url: '/pages/adminHome/adminHome' }); return //本地测试，用于直接跳转admin页面
+    wx.showLoading({ title: '读取中...' });
+    wx.cloud.callFunction({
+      name: 'login',
+      data: { name, phone },
+      success: res => {
+        const role = res.result.role;
+        // console.log(res.result.LogInfo);//日志，可删
+        if (role === 'admin') {
+          wx.redirectTo({ url: '/pages/adminHome/adminHome' })
+        } else if (role === 'student') {
+          wx.switchTab({ url: '/pages/studentHome/studentHome' })
+        }
+        wx.hideLoading();
+      },
+      fail: () => {
+        wx.showToast({ title: '登录失败', icon: 'none' });
+      }
+    })
+
     this.getBanners();
     this.getTeachers();
   },
