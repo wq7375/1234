@@ -170,7 +170,7 @@ initWeek() {
   const { weekOffset } = this.data;
   const { mondayStr } = getWeekStartStrings(weekOffset);
   
-  console.log('初始化周数据，周偏移:', weekOffset, '周一日期:', mondayStr);
+  // console.log('初始化周数据，周偏移:', weekOffset, '周一日期:', mondayStr);
   
   // 生成周日期数组
   const weekDates = getWeekDates(weekOffset);
@@ -187,10 +187,10 @@ initWeek() {
       data: { weekOffset }
     },
     success: res => {
-      console.log('获取课表云函数返回:', res);
+      // console.log('获取课表云函数返回:', res);
       if (res.result && res.result.success) {
         const data = res.result.data;
-        console.log('获取到的课表数据:', data);
+        // console.log('获取到的课表数据:', data);
         
         this.setData({
           courses: data.courses,
