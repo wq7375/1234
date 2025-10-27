@@ -9,10 +9,10 @@
 
 | 类型 | 名称 |
 |:---:|:---:|
-| 云函数 | `checkClassStatus`,<br>`deletePeople`,<br>`getBookingHistory`,<br>`manageSchedule`,<br>`updateSchedule` |
-| 页面 | `Schedules.js`,<br>`youkekebiao.js`,<br>`yueke.js`(已修改) |
+| 云函数 | `checkClassStatus`,<br>`deletePeople`,<br>`getBookingHistory`(已处理),<br>`manageSchedule`,<br>`updateSchedule` |
+| 页面 | `courseManage.js`,<br>`Schedules.js`,<br>`youkekebiao.js`(已处理),<br>`yueke.js`(已处理) |
 
 ## TODO
 
-* 检查上述页面并添加其运行逻辑的描述.
-* 写README.md(可选).
+* 检查上述页面并修改对应代码.
+* 写`README.md`(可选).
