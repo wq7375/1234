@@ -61,6 +61,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
+  min-width: 0;
 }
 
 .icon-btn {

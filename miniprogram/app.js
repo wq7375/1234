@@ -13,7 +13,7 @@ App({
         onShareAppMessage() {
           return {
             title: '姿美知音',
-            path: '/pages/login/login',
+            path: '/pages/youke/youke',
             imageUrl: '/images/logo.png'
           
           };

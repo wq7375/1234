@@ -38,5 +38,8 @@ Page({
   goTeacherDetail(e) {
     const id = e.currentTarget.dataset.id;
     wx.navigateTo({ url: '/pages/teacherDetail/teacherDetail?id=' + id });
+  },
+  goTologin() {
+    wx.navigateTo({ url: '/pages/login/login' });
   }
 });
