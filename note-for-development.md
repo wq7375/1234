@@ -11,7 +11,7 @@
 
 | 类型 | 名称 |
 |:---:|:---:|
-| 云函数 | `checkClassStatus`,<br>`deletePeople`(已处理),<br>`getBookingHistory`(已处理),<br>`manageSchedule`(已处理),<br>`updateSchedule`(已处理) |
+| 云函数 | `checkClassStatus`(已处理),<br>`deletePeople`(已处理),<br>`getBookingHistory`(已处理),<br>`manageSchedule`(已处理),<br>`updateSchedule`(已处理) |
 | 页面 | `courseManage.js`,<br>`Schedules.js`,<br>`youkekebiao.js`(已处理),<br>`yueke.js`(已处理) |
 
 #### TODO
@@ -24,3 +24,7 @@
 * 修改删除课程的逻辑
 * 添加提醒保存功能
   > 暂定实现逻辑：给页面添加一个属性`isEdited`，在进行页面操作和保存时，修改这一属性的值。
+
+## 疑问
+
+定义了云函数`checkClassStatus`，但没有见到调用，这是为何啊？

@@ -70,7 +70,8 @@ exports.main = async (event, context) => {
                 name: lesson.content,
                 teacher: lesson.teacher,
                 bookedCount: lesson.bookedCount,
-                minCount: lesson.minCount
+                minCount: lesson.minCount,
+                affectedStudents: bookingRes.data.length // 添加受影响学生人数
               });
               
               updated = true;
@@ -115,33 +116,40 @@ async function cancelClassAndNotify(weekStart, date, type, lessonIndex, lesson) 
       return { success: false, message: '未找到课表文档' };
     }
     
-    const scheduleDoc = scheduleRes.data[0];
-    const courses = scheduleDoc.courses || [];
-    const courseIndex = courses.findIndex(c => c.date === date && c.type === type);
+    // 2. 从booking集合查询已预约该课程的学生
+    const bookingRes = await db.collection('booking')
+      .where({
+        weekStart: weekStart,
+        courseDate: date,
+        courseType: type,
+        lessonIndex: lessonIndex
+      })
+      .get();
     
-    if (courseIndex === -1) {
-      return { success: false, message: '未找到对应课程' };
-    }
+    console.log(`找到 ${bookingRes.data.length} 个预约记录`);
     
-    // 2. 通知已预约学员并返还次数
-    if (lesson.students && lesson.students.length > 0) {
-      for (const student of lesson.students) {
+    // 3. 通知已预约学员并返还次数
+    if (bookingRes.data.length > 0) {
+      for (const booking of bookingRes.data) {
         // 返还预约次数
-        const returnResult = await returnBookingCount(student.studentId, student.cardLabel);
+        const returnResult = await returnBookingCount(booking.studentId, booking.cardLabel);
         
         if (!returnResult.success) {
-          console.error(`返还用户 ${student.studentId} 次数失败:`, returnResult.message);
+          console.error(`返还用户 ${booking.studentId} 次数失败:`, returnResult.message);
           // 继续处理其他学生，不中断流程
           continue;
         }
         
         // 发送通知
-        await sendNotification(student.studentId, {
+        await sendNotification(booking.studentId, {
           courseDate: date,
           startTime: lesson.startTime,
           courseName: lesson.content,
           teacher: lesson.teacher
         });
+        
+        // 删除预约记录（可选，根据业务需求决定）
+        // await db.collection('booking').doc(booking._id).remove();
       }
     }
     
