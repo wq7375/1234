@@ -97,36 +97,25 @@ exports.main = async (event, context) => {
           
           if (targetCourse.lessons && targetCourse.lessons[lessonKey]) {
             const lesson = targetCourse.lessons[lessonKey]
-            console.log('找到课节:', lessonKey, '学生数量:', lesson.students ? lesson.students.length : 0)
+            console.log('找到课节:', lessonKey, '原预约人数:', lesson.bookedCount || 0)
             
-            // 检查该学生是否在这个课节中
-            const studentInLesson = lesson.students && lesson.students.some(student => student.studentId === id)
-            console.log('学生是否在课节中:', studentInLesson)
+            // 更新bookedCount（减少1）
+            const updatedBookedCount = Math.max(0, (lesson.bookedCount || 0) - 1)
             
-            if (studentInLesson) {
-              // 从学生列表中移除该学生
-              const updatedStudents = lesson.students.filter(student => student.studentId !== id)
-              
-              // 更新bookedCount
-              const updatedBookedCount = Math.max(0, (lesson.bookedCount || 0) - 1)
-              
-              // 构建更新数据 - 使用正确的字段路径
-              const updateData = {
-                [`courses.${courseIndex}.lessons.${lessonKey}.students`]: updatedStudents,
-                [`courses.${courseIndex}.lessons.${lessonKey}.bookedCount`]: updatedBookedCount
-              }
-              
-              console.log('更新数据:', updateData)
-              
-              // 更新schedule
-              const scheduleRes = await db.collection('schedules').doc(schedule._id).update({
-                data: updateData
-              })
-              
-              console.log('更新schedule结果:', scheduleRes)
-            } else {
-              console.log('学生不在该课节中，无需更新')
+            // 构建更新数据 - 只更新bookedCount
+            const updateData = {
+              [`courses.${courseIndex}.lessons.${lessonKey}.bookedCount`]: updatedBookedCount
             }
+            
+            console.log('更新数据:', updateData)
+            
+            // 更新schedule
+            const scheduleRes = await db.collection('schedules').doc(schedule._id).update({
+              data: updateData
+            })
+            
+            console.log('更新schedule结果:', scheduleRes)
+            console.log('已更新预约人数:', updatedBookedCount)
           } else {
             console.log('未找到课节索引为', lessonKey, '的课节')
             if (targetCourse.lessons) {

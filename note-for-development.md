@@ -11,7 +11,7 @@
 
 | 类型 | 名称 |
 |:---:|:---:|
-| 云函数 | `checkClassStatus`,<br>`deletePeople`,<br>`getBookingHistory`(已处理),<br>`manageSchedule`(已处理),<br>`updateSchedule`(已处理) |
+| 云函数 | `checkClassStatus`,<br>`deletePeople`(已处理),<br>`getBookingHistory`(已处理),<br>`manageSchedule`(已处理),<br>`updateSchedule`(已处理) |
 | 页面 | `courseManage.js`,<br>`Schedules.js`,<br>`youkekebiao.js`(已处理),<br>`yueke.js`(已处理) |
 
 #### TODO
