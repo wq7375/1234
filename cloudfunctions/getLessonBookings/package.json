@@ -1,0 +1,9 @@
+{
+  "name": "getlessonbookings",
+  "version": "1.0.0",
+  "description": "获取预约某课程的学生",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "^3.0.1"
+  }
+}
