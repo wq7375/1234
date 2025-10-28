@@ -238,17 +238,16 @@ Page({
   },
 
   // 更新当前日期下课程
-  // 在yueke.js的updateLessons方法中添加详细的状态检测日志
   updateLessons() {
     const { courses, selectedDate, selectedType, userId, currentWeekBookings } = this.data;
-    console.log('=== 开始更新课程列表 ===');
-    console.log('当前用户ID:', userId);
-    console.log('选择的日期:', selectedDate);
-    console.log('课程类型:', selectedType);
-    console.log('当前周预约记录:', currentWeekBookings);
+    // console.log('=== 开始更新课程列表 ===');
+    // console.log('当前用户ID:', userId);
+    // console.log('选择的日期:', selectedDate);
+    // console.log('课程类型:', selectedType);
+    // console.log('当前周预约记录:', currentWeekBookings);
     
     const course = courses.find(c => c.date === selectedDate && c.type === selectedType);
-    console.log('找到的课程:', course);
+    // console.log('找到的课程:', course);
     
     let lessons = [];
     if (course && course.lessons) {
@@ -261,12 +260,12 @@ Page({
         
         const canCancel = hasBooked && isCanCancel(selectedDate, lesson.startTime);
         
-        console.log('课时状态检测:', {
-          课时ID: lesson._id,
-          开始时间: lesson.startTime,
-          已预约: hasBooked,
-          可取消: canCancel
-        });
+        // console.log('课时状态检测:', {
+        //   课时ID: lesson._id,
+        //   开始时间: lesson.startTime,
+        //   已预约: hasBooked,
+        //   可取消: canCancel
+        // });
         
         // 添加预约状态信息
         return {
@@ -288,7 +287,7 @@ Page({
       return timeA - timeB;
     });
     
-    console.log('最终课程列表:', lessons);
+    // console.log('最终课程列表:', lessons);
     this.setData({ lessons });
   },
 
@@ -335,9 +334,9 @@ Page({
         lessonIndex: lessonId
       }
     }).then(res => {
-      console.log('预约云函数返回:', res);
+      // console.log('预约云函数返回:', res);
       if (res.result && res.result.success) {
-        console.log('预约成功，开始更新课表');
+        // console.log('预约成功，开始更新课表');
         wx.cloud.callFunction({
           name: 'updateSchedule',
           data: {
@@ -353,9 +352,9 @@ Page({
             }
           }
         }).then(res2 => {
-          console.log('更新课表云函数返回:', res2);
+          // console.log('更新课表云函数返回:', res2);
           if (res2.result && res2.result.success) {
-            console.log('更新课表成功，重新加载数据');
+            // console.log('更新课表成功，重新加载数据');
             // 预约成功后，重新加载数据
             this.initWeek();
             wx.showToast({
