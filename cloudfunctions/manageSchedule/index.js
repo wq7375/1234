@@ -78,7 +78,6 @@ exports.main = async (event, context) => {
 }
 
 // 获取课表
-// 在manageSchedule.js中修改getSchedule方法，添加详细日志
 async function getSchedule(data) {
   const { weekOffset = 0 } = data;
   const { mondayStr, sundayAnchorStr, weekEndStr } = getWeekStartStrings(weekOffset);
@@ -361,7 +360,6 @@ async function copyLastWeek(data) {
       
       const lesson = lessonsObj[lessonId];
       lesson.bookedCount = 0; // 将当前课程的已预约人数重置为0
-      lesson.students = []; // 将当前课程的学生列表清空
     }
   });
   
