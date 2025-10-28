@@ -401,19 +401,39 @@ selectDateType(e) {
     wx.navigateTo({ url: '/pages/admin/schedules/schedules' });
   },
   
+  // 需要新增云函数来获取预约名单
   viewBookings(e) {
     const { date, type, index } = e.currentTarget.dataset;
-    const courses = this.data.courses;
-    const idx = courses.findIndex(c => c.date === date && c.type === type);
-    if (idx === -1) {
-      wx.showModal({ title: '预约名单', content: '暂无预约' });
-      return;
-    }
-    const lesson = courses[idx].lessons[index] || {};
-    const names = (lesson.students || []).map(s => s.name).join(', ');
-    wx.showModal({
-      title: '预约名单',
-      content: names || '暂无预约'
+    const { weekStart } = this.data;
+    
+    wx.showLoading({ title: '加载中...' });
+    
+    // 调用云函数获取预约名单
+    wx.cloud.callFunction({
+      name: 'getLessonBookings', // 需要新增这个云函数
+      data: {
+        weekStart: weekStart,
+        date: date,
+        type: type,
+        lessonIndex: index
+      },
+      success: res => {
+        wx.hideLoading();
+        if (res.result && res.result.success) {
+          const students = res.result.data || [];
+          const names = students.map(s => s.name).join(', ');
+          wx.showModal({
+            title: '预约名单',
+            content: names || '暂无预约'
+          });
+        } else {
+          wx.showToast({ title: '获取预约名单失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '获取预约名单失败', icon: 'none' });
+      }
     });
   },
 

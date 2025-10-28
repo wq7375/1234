@@ -12,7 +12,7 @@
 | 类型 | 名称 |
 |:---:|:---:|
 | 云函数 | `checkClassStatus`(已处理),<br>`deletePeople`(已处理),<br>`getBookingHistory`(已处理),<br>`manageSchedule`(已处理),<br>`updateSchedule`(已处理) |
-| 页面 | `courseManage.js`,<br>`Schedules.js`,<br>`youkekebiao.js`(已处理),<br>`yueke.js`(已处理) |
+| 页面 | `courseManage.js`(已处理),<br>`Schedules.js`(已处理),<br>`youkekebiao.js`(已处理),<br>`yueke.js`(已处理) |
 
 #### TODO
 
