@@ -89,7 +89,9 @@ Page({
     hours,
     minutes,
     weekOffset: 0, // 0: 本周，7: 下周
-    canSetNextWeek: false // 是否可制定下周课表
+    canSetNextWeek: false, // 是否可制定下周课表
+    hasUnsavedChanges: false, // 标记是否有未保存的修改
+    isCheckingUnsaved: false,  // 防止重复检查
   },
 
   onLoad() {
@@ -98,9 +100,52 @@ Page({
     // console.log(this.data)
   },
 
-  onLoad(){
-    this.checkAdminPermission();
-    this.initWeek();
+  onUnload() {
+    this.checkUnsavedChanges('onUnload');
+  },
+
+  onHide() {
+    this.checkUnsavedChanges('onHide');
+  },
+
+  // 检查未保存更改的方法
+  checkUnsavedChanges(source) {
+    if (this.data.isCheckingUnsaved || !this.data.hasUnsavedChanges) {
+      return;
+    }
+    
+    this.setData({ isCheckingUnsaved: true });
+    
+    wx.showModal({
+      title: '未保存的更改',
+      content: '您有未保存的修改，是否要保存？',
+      showCancel: true,
+      cancelText: '不保存',
+      confirmText: '保存',
+      success: (res) => {
+        this.setData({ isCheckingUnsaved: false });
+        
+        if (res.confirm) {
+          // 用户选择保存
+          this.saveSchedule();
+          // 延迟退出，让保存操作完成
+          setTimeout(() => {
+            if (source === 'onUnload') {
+              wx.navigateBack();
+            }
+          }, 1000);
+        } else if (res.cancel) {
+          // 用户选择不保存，直接退出
+          if (source === 'onUnload') {
+            wx.navigateBack();
+          }
+        }
+        // 如果用户点击蒙层关闭，则不执行任何操作
+      },
+      fail: () => {
+        this.setData({ isCheckingUnsaved: false });
+      }
+    });
   },
 
   // 检查管理员权限
@@ -157,57 +202,61 @@ Page({
 
   // 切换本周/下周课表
   showThisWeek() {
-    this.setData({ weekOffset: 0 }, () => this.initWeek());
+    this.checkUnsavedBeforeNavigate(() => {
+      this.setData({ weekOffset: 0 }, () => this.initWeek());
+    });
   },
   showNextWeek() {
-    this.setData({ weekOffset: 7 }, () => this.initWeek());
+    this.checkUnsavedBeforeNavigate(() => {
+      this.setData({ weekOffset: 7 }, () => this.initWeek());
+    });
   },
   
 
   // 初始化课表
- // 修改initWeek方法，添加详细的日志输出
-initWeek() {
-  const { weekOffset } = this.data;
-  const { mondayStr } = getWeekStartStrings(weekOffset);
-  
-  // console.log('初始化周数据，周偏移:', weekOffset, '周一日期:', mondayStr);
-  
-  // 生成周日期数组
-  const weekDates = getWeekDates(weekOffset);
-  
-  this.setData({ 
-    weekStart: mondayStr,
-    weekDates 
-  });
+  initWeek() {
+    const { weekOffset } = this.data;
+    const { mondayStr } = getWeekStartStrings(weekOffset);
+    
+    // console.log('初始化周数据，周偏移:', weekOffset, '周一日期:', mondayStr);
+    
+    // 生成周日期数组
+    const weekDates = getWeekDates(weekOffset);
+    
+    this.setData({ 
+      weekStart: mondayStr,
+      weekDates 
+    });
 
-  wx.cloud.callFunction({
-    name: 'manageSchedule',
-    data: {
-      operation: 'getSchedule',
-      data: { weekOffset }
-    },
-    success: res => {
-      // console.log('获取课表云函数返回:', res);
-      if (res.result && res.result.success) {
-        const data = res.result.data;
-        // console.log('获取到的课表数据:', data);
-        
-        this.setData({
-          courses: data.courses,
-          selectedDate: data.selectedDate,
-          selectedType: data.selectedType
-        });
-      } else {
-        console.error('获取课表失败:', res.result);
-        wx.showToast({ title: res.result.message || '课表加载失败', icon: 'none' });
+    wx.cloud.callFunction({
+      name: 'manageSchedule',
+      data: {
+        operation: 'getSchedule',
+        data: { weekOffset }
+      },
+      success: res => {
+        // console.log('获取课表云函数返回:', res);
+        if (res.result && res.result.success) {
+          const data = res.result.data;
+          // console.log('获取到的课表数据:', data);
+          
+          this.setData({
+            courses: data.courses,
+            selectedDate: data.selectedDate,
+            selectedType: data.selectedType
+          });
+        } else {
+          console.error('获取课表失败:', res.result);
+          wx.showToast({ title: res.result.message || '课表加载失败', icon: 'none' });
+        }
+      },
+      fail: (err) => {
+        console.error('调用云函数失败:', err);
+        wx.showToast({ title: '课表加载失败', icon: 'none' });
       }
-    },
-    fail: (err) => {
-      console.error('调用云函数失败:', err);
-      wx.showToast({ title: '课表加载失败', icon: 'none' });
-    }
-  });
-},
+    });
+  },
+
   // 复制上周课表
   copyLastWeekSchedule() {
     const { weekOffset } = this.data;
@@ -239,17 +288,17 @@ initWeek() {
     });
   },
 
-// 添加选择日期的方法
-selectDate(e) {
-  const date = e.currentTarget.dataset.date;
-  this.setData({ selectedDate: date });
-},
+  // 添加选择日期的方法
+  selectDate(e) {
+    const date = e.currentTarget.dataset.date;
+    this.setData({ selectedDate: date });
+  },
 
-// 修改selectDateType方法
-selectDateType(e) {
-  const { date, type } = e.currentTarget.dataset;
-  this.setData({ selectedDate: date, selectedType: type });
-},
+  // 修改selectDateType方法
+  selectDateType(e) {
+    const { date, type } = e.currentTarget.dataset;
+    this.setData({ selectedDate: date, selectedType: type });
+  },
 
   // picker选择小时或分钟
   onPickerChange(e) {
@@ -314,6 +363,7 @@ selectDateType(e) {
       
       this.setData({
         courses,
+        hasUnsavedChanges: true, // 标记有未保存修改
         editingLesson: {
           startHour: '09',
           startMinute: '00',
@@ -377,7 +427,10 @@ selectDateType(e) {
       // 检查课程是否存在，然后删除
       if (course.lessons && course.lessons.hasOwnProperty(lessonId)) {
         delete course.lessons[lessonId];
-        this.setData({ courses });
+        this.setData({
+          courses,
+          hasUnsavedChanges: true // 标记有未保存修改
+        });
       }
     }
   },
@@ -395,6 +448,8 @@ selectDateType(e) {
       success: res => {
         if (res.result.success) {
           wx.showToast({ title: res.result.message });
+          // 保存成功后重置未保存标记
+          this.setData({ hasUnsavedChanges: false });
         } else {
           wx.showToast({ title: res.result.message || '保存失败', icon: 'none' });
         }
@@ -406,7 +461,36 @@ selectDateType(e) {
   },
   
   goToschedules() {
-    wx.navigateTo({ url: '/pages/admin/schedules/schedules' });
+    this.checkUnsavedBeforeNavigate(() => {
+      wx.navigateTo({ url: '/pages/admin/schedules/schedules' });
+    });
+  },
+
+  checkUnsavedBeforeNavigate(callback) {
+    if (!this.data.hasUnsavedChanges) {
+      callback();
+      return;
+    }
+    
+    wx.showModal({
+      title: '未保存的更改',
+      content: '您有未保存的修改，是否要保存？',
+      showCancel: true,
+      cancelText: '不保存',
+      confirmText: '保存',
+      success: (res) => {
+        if (res.confirm) {
+          // 保存并导航
+          this.saveSchedule();
+          // 延迟执行导航，让保存操作完成
+          setTimeout(callback, 1000);
+        } else if (res.cancel) {
+          // 不保存直接导航
+          callback();
+        }
+        // 如果用户点击蒙层关闭，则不执行导航
+      }
+    });
   },
   
   // 获取预约名单
