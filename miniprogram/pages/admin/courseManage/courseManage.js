@@ -346,32 +346,40 @@ selectDateType(e) {
               data: { weekStart, date, type, lessonIndex: id }
             },
             success: (res) => {
+              // 无论云端删除是否成功，都删除本地数据
+              this.deleteLocalLesson(date, type, id);
+              
               if (res.result.success) {
-                wx.showToast({ title: '删除成功' });
-                // 本地同步删除，避免刷新前数据不一致
-                const courses = [...this.data.courses];
-                const idx = courses.findIndex(c => c.date === date && c.type === type);
-                if (idx > -1) {
-                  // 检查lessons对象是否存在，并且要删除的课程ID是否存在
-                  if (courses[idx].lessons && courses[idx].lessons.hasOwnProperty(id)) {
-                    delete courses[idx].lessons[id];
-                    this.setData({ courses });
-                  } else {
-                    // 可选：添加错误处理
-                    console.error('课程ID不存在:', id);
-                  }
-                }
+                wx.showToast({ title: res.result.message || '删除成功' });
               } else {
-                wx.showToast({ title: res.result.message || '删除失败', icon: 'none' });
+                // 云端删除失败，但本地数据已删除
+                console.log('云端删除失败，但本地数据已删除:', res.result.message);
               }
             },
-            fail: () => {
-              wx.showToast({ title: '删除操作失败', icon: 'none' });
+            fail: (err) => {
+              console.error('调用云函数失败，删除本地数据:', err);
+              // 即使云函数调用失败，也要删除本地数据
+              this.deleteLocalLesson(date, type, id);
             }
           });
         }
       }
     });
+  },
+  
+  // 新增：删除本地课程数据的方法
+  deleteLocalLesson(date, type, lessonId) {
+    const courses = [...this.data.courses];
+    const courseIndex = courses.findIndex(c => c.date === date && c.type === type);
+    
+    if (courseIndex > -1) {
+      const course = courses[courseIndex];
+      // 检查课程是否存在，然后删除
+      if (course.lessons && course.lessons.hasOwnProperty(lessonId)) {
+        delete course.lessons[lessonId];
+        this.setData({ courses });
+      }
+    }
   },
 
   // 保存课表
@@ -401,7 +409,7 @@ selectDateType(e) {
     wx.navigateTo({ url: '/pages/admin/schedules/schedules' });
   },
   
-  // 需要新增云函数来获取预约名单
+  // 获取预约名单
   viewBookings(e) {
     const { date, type, index } = e.currentTarget.dataset;
     const { weekStart } = this.data;
@@ -410,7 +418,7 @@ selectDateType(e) {
     
     // 调用云函数获取预约名单
     wx.cloud.callFunction({
-      name: 'getLessonBookings', // 需要新增这个云函数
+      name: 'getLessonBookings',
       data: {
         weekStart: weekStart,
         date: date,
