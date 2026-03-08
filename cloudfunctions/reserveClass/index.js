@@ -51,7 +51,7 @@ exports.main = async (event) => {
       return { success: false, msg: '该卡已过期', LogInfo: logging };
     }
 
-    // 新增：验证卡类型与课程类型是否匹配
+    // 验证卡类型与课程类型是否匹配
     if (action === 'reserve') {
       // 私教卡只能用于私教课
       if (card.type === 'private' && courseType !== 'private') {

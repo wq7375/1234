@@ -213,12 +213,12 @@ Page({
 
   // 刷新课程列表（按开始时间排序）
   updateLessons() {
-    const { courses, selectedDate, selectedType } = this.data;
+    const { courses, selectedDate, selectedType, weekStart } = this.data;
     
     const course = courses.find(c => c.date === selectedDate && c.type === selectedType);
     
     let lessonsObj = course ? course.lessons : {};
-   
+    
     // 将lessons对象转换为数组，排除numOfLessonsAdded属性
     let lessonsArray = [];
     if (lessonsObj) {
@@ -226,15 +226,10 @@ Page({
         if (key !== 'numOfLessonsAdded' && lessonsObj.hasOwnProperty(key)) {
           const lesson = lessonsObj[key];
           lesson["_id"] = key;
-          
-          // 确保students字段存在且是数组
-          if (!lesson.students) {
-            lesson.students = [];
-          } else if (!Array.isArray(lesson.students)) {
-            // 如果students不是数组，尝试转换为数组
-            lesson.students = Object.values(lesson.students);
-          }
-        
+
+          // 不再从课程数据中获取学生名单，初始化为空数组
+          lesson.students = [];
+
           lessonsArray.push(lesson);
         }
       }
@@ -247,6 +242,41 @@ Page({
     });
     
     this.setData({ lessons: lessonsArray });
+    
+    // 为每个课时获取预约名单
+    this.loadBookingsForLessons(lessonsArray, weekStart, selectedDate, selectedType);
+  },
+
+  // 为所有课时加载预约名单
+  loadBookingsForLessons(lessonsArray, weekStart, date, type) {
+    const promises = lessonsArray.map(lesson => {
+      return new Promise((resolve) => {
+        wx.cloud.callFunction({
+          name: 'getLessonBookings',
+          data: {
+            weekStart: weekStart,
+            date: date,
+            type: type,
+            lessonIndex: lesson._id
+          },
+          success: res => {
+            if (res.result && res.result.success) {
+              lesson.students = res.result.data || [];
+            }
+            resolve();
+          },
+          fail: () => {
+            lesson.students = [];
+            resolve();
+          }
+        });
+      });
+    });
+    
+    // 所有预约数据加载完成后更新界面
+    Promise.all(promises).then(() => {
+      this.setData({ lessons: lessonsArray });
+    });
   },
 
   // === 强制预约相关 ===
@@ -290,7 +320,6 @@ Page({
       fail: () => cb && cb()
     })
   },
-  
 
   onForceBookStudentChange(e) {
     const idx = Number(e.detail.value)
@@ -302,8 +331,7 @@ Page({
       cardList,
       selectedCardIdx: 0
     })
-  }
-,
+  },
 
   onForceBookCardChange(e) {
     this.setData({ selectedCardIdx: Number(e.detail.value) });
@@ -311,29 +339,29 @@ Page({
 
   // 强制预约提交
   // 在submitForceBook函数中添加卡片类型验证
-submitForceBook() {
-  const lessonId = this.data.forceBookLessonId;
-  const student = this.data.studentList[this.data.selectedStudentIdx];
-  const card = this.data.cardList[this.data.selectedCardIdx];
+  submitForceBook() {
+    const lessonId = this.data.forceBookLessonId;
+    const student = this.data.studentList[this.data.selectedStudentIdx];
+    const card = this.data.cardList[this.data.selectedCardIdx];
 
-  if (!student) {
-    wx.showToast({ title: '请选择学生', icon: 'none' });
-    return;
-  }
-  if (!card) {
-    wx.showToast({ title: '请选择卡', icon: 'none' });
-    return;
-  }
+    if (!student) {
+      wx.showToast({ title: '请选择学生', icon: 'none' });
+      return;
+    }
+    if (!card) {
+      wx.showToast({ title: '请选择卡', icon: 'none' });
+      return;
+    }
 
-  // 验证私教课只能使用私教卡
-  if (this.data.selectedType === 'private' && card.type !== 'private') {
-    wx.showToast({ 
-      title: '私教课只能使用私教卡预约', 
-      icon: 'none',
-      duration: 2000
-    });
-    return;
-  }
+    // 验证私教课只能使用私教卡
+    if (this.data.selectedType === 'private' && card.type !== 'private') {
+      wx.showToast({ 
+        title: '私教课只能使用私教卡预约', 
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
   
     wx.cloud.callFunction({
       name: 'reserveClass',

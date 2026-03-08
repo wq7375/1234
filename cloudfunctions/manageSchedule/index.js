@@ -78,7 +78,6 @@ exports.main = async (event, context) => {
 }
 
 // 获取课表
-// 在manageSchedule.js中修改getSchedule方法，添加详细日志
 async function getSchedule(data) {
   const { weekOffset = 0 } = data;
   const { mondayStr, sundayAnchorStr, weekEndStr } = getWeekStartStrings(weekOffset);
@@ -210,22 +209,22 @@ async function deleteLesson(data) {
   if (res.data.length === 0) {
     return { success: false, message: '未找到课表' }
   }
-  
+
   const doc = res.data[0]
   const courses = doc.courses || []
   const courseIndex = courses.findIndex(c => c.date === date && c.type === type)
-  
+
   if (courseIndex === -1) {
     return { success: false, message: '未找到对应课程' }
   }
-  
+
   // 获取课程信息
   const course = courses[courseIndex]
   const lessonsObj = course.lessons || {}
-  
+
   // 检查课程是否存在
   if (!lessonsObj.hasOwnProperty(lessonIndex) || lessonIndex === "numOfLessonsAdded") {
-    return { success: false, message: '课程ID不存在' }
+    return { success: true, message: '本地课程已删除' }
   }
   
   const lesson = lessonsObj[lessonIndex]
@@ -361,7 +360,6 @@ async function copyLastWeek(data) {
       
       const lesson = lessonsObj[lessonId];
       lesson.bookedCount = 0; // 将当前课程的已预约人数重置为0
-      lesson.students = []; // 将当前课程的学生列表清空
     }
   });
   
