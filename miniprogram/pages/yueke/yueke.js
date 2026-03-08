@@ -47,11 +47,12 @@ function isCanBook(courseDate, startTime) {
 function isCanCancel(courseDate, startTime){
   // 创建给定时间的 Date 对象
   const courseDateTime = new Date(`${courseDate}T${startTime}`);
+
   // 获取当前本地时间
   const currentDateTime = new Date();
   // 比较并返回结果
-  return currentDateTime < courseDateTime;
-}
+  return currentDateTime >= startTime-1;}
+  
 
 // 工具：预约时间提示
 function getBookTimeTip(courseDate, startTime) {

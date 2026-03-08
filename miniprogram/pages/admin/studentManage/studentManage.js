@@ -61,14 +61,25 @@ Page({
 
   // 拉取列表
   getPeopleList() {
-    db.collection('people').get({
-      success: res => {
-        this.setData({ peopleList: res.data });
-      },
-      fail: err => {
-        wx.showToast({ title: '加载列表失败', icon: 'none' });
-        console.error('getPeopleList fail', err);
+    const db = wx.cloud.database();
+    const peopleCollection = db.collection('people');
+    const MAX_LIMIT = 20; // 每次最多20
+    // 先获取总数
+    peopleCollection.count().then(res => {
+      const total = res.total;
+      const batchTimes = Math.ceil(total / MAX_LIMIT);
+      const tasks = [];
+      for (let i = 0; i < batchTimes; i++) {
+        tasks.push(
+          peopleCollection.skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+        );
       }
+      Promise.all(tasks).then(results => {
+        const allData = results.reduce((acc, cur) => acc.concat(cur.data), []);
+        this.setData({
+          peopleList: allData
+        });
+      });
     });
   },
 
